@@ -1,0 +1,13 @@
+{
+  "name": "frontier159-skills",
+  "description": "Agent skills for reviewing and landing work: github-pr-review (review GitHub PRs and post proven findings) and review-loop (cold adversarial review loop for code, plans, specs and docs).",
+  "version": "1.0.0",
+  "author": {
+    "name": "frontier159",
+    "url": "https://github.com/frontier159"
+  },
+  "homepage": "https://github.com/frontier159/skills",
+  "repository": "https://github.com/frontier159/skills",
+  "license": "MIT",
+  "keywords": ["code-review", "pull-requests", "github", "agents", "review"]
+}
