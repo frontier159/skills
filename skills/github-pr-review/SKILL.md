@@ -19,9 +19,15 @@ The operator holds the **gate**. Nothing is posted until they give their verdict
 - For a stack, order the PRs base-first. Each PR's diff is `git diff <base-branch>...<head>`.
 - Work in a fresh worktree (`git worktree add ../<repo>-review origin/<head>`) whenever the operator's checkout has uncommitted changes. Say so in one line.
 - Run the repo's typecheck, lint, format and test gates at every PR tip, in the background, and record the results.
+- Gather the **house rules**, in this order, reading every hit in full:
+  1. Agent guides from the repo root down to every path the PRs touch: `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.cursor/rules/`, `.github/copilot-instructions.md`, plus `CONTRIBUTING.md` and any style guide they link.
+  2. Your memory: the index, then every entry marked as feedback, a rule or a convention, and any house-rules file an entry names.
+  3. Any `house-rules.md` file or `## House rules` section those sources point to.
+
+  The more specific source wins a conflict. When nothing turns up, say so; the reviewers fall back on the repo's guides alone.
 - Check which [recommended companion skills](#recommended-companion-skills) are installed. Ask the operator once about all the missing ones together, and install only what they approve. Continue without the rest.
 
-Done when every PR has a pinned head sha and a baseline gate result, and the operator has answered for every missing companion skill.
+Done when every PR has a pinned head sha and a baseline gate result, every house-rules source is listed by path (or recorded as "none found"), and the operator has answered for every missing companion skill.
 
 ## 2. Collect what's already said
 

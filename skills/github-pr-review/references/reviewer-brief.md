@@ -20,8 +20,8 @@ Standards sources (read all): <root and per-package guides: AGENTS.md /
 CLAUDE.md / CONTRIBUTING / style guides>. For any unsettled pattern, compare
 against sibling code in the same package.
 
-House rules (binding; override the smell baseline): <the operator's rules
-from memory and guides, numbered>
+House rules (binding; override the smell baseline): <every rule from the
+sources gathered in step 1, numbered, each with its source path>
 
 Over-engineering axis: anything that can be deleted or collapsed. Look for
 props or variants nobody passes, single-use abstractions, config for constants,

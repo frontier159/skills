@@ -18,8 +18,8 @@ Standards sources (read all): <repo guides: AGENTS.md, CLAUDE.md,
 CONTRIBUTING, per-package guides, style guides>
 
 House rules (binding; they override the smell baseline):
-<the operator's rules, numbered. Refresh them from memory or notes on every
-run.>
+<every rule from the sources gathered in step 1, numbered. Give each source's
+path, or write "none found, defaults apply".>
 ```
 
 ## Default house rules
@@ -27,14 +27,17 @@ run.>
 Use these when the operator has none, or as a starting set to merge with theirs:
 
 1. Add only what the product uses. Delete an unused or over-shaped type or field in the change that finds it.
-2. No speculative generality: no interface with one implementation, no factory for one product, no config for a constant, no scaffolding for later.
+2. No speculative generality: no interface with one implementation, no factory for one product, no config for a constant, no scaffolding for later. Take the shortest working diff.
 3. Reuse before writing: name the existing helper, type or library function a new one duplicates.
 4. Make a parameter every caller must decide required, and pass it explicitly. Don't default it to one caller's answer.
 5. Keep test-only parameters and seams out of production signatures.
 6. Validate at trust boundaries, then stop. Speculative checks hide the ones that matter.
-7. A comment states a fact the code and its names can't show. No narration of who calls what, no change history, no plan, PR or ticket references.
+7. A comment states a fact the code and its names can't show, in one or two short sentences of plain technical English. No narration of who calls what, no change history, no plan, PR or ticket references, and no explaining another module's vocabulary.
 8. Rename a field that needs a comment to say what it's for.
 9. A union that clients switch on gets a named type.
+10. A request carries only what the callee can't derive itself.
+11. Errors a caller must handle are part of the return type; throw only for bugs.
+12. Each module has one public entry file. A symbol only one file uses isn't exported, and deep imports stay internal.
 
 ## Axes
 
@@ -44,7 +47,7 @@ Use these when the operator has none, or as a starting set to merge with theirs:
 - Is it in the right module? A type used by two packages belongs in the lower one; a type used by one file shouldn't be exported.
 - Does it duplicate something that already exists? Name it.
 
-**Smell baseline** (judgement calls; label them as such): mysterious name, duplicated code, feature envy, data clumps, primitive obsession, repeated switches, shotgun surgery, speculative generality, message chains, middle man.
+**Smell baseline** (judgement calls; label them as such): mysterious name, duplicated code, feature envy, data clumps, primitive obsession, repeated switches, shotgun surgery, divergent change, speculative generality, message chains, middle man, refused bequest.
 
 **Document soundness** (documents):
 - contradictions between sections;

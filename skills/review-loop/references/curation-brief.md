@@ -27,9 +27,10 @@ Toolchain: <as in the executor brief>. Typecheck per commit: <command>.
   is unavailable, build commits forward from the base with
   git checkout <backup> -- <paths>, and hand-edit intermediate states where
   one file lands in two commits.
-- Commit messages: `<area>: <one present-tense sentence>` and a body of one to
-  three short paragraphs: what changes, and the fact that motivates it.
-  No plan numbers, PR numbers, review references or dates.
+- Commit messages: `<area>: <one present-tense sentence, lower case after the
+  colon, no full stop>` and a body of one to three short paragraphs: what
+  changes, and the fact that motivates it. No plan numbers, phase names, PR
+  numbers, review references or dates.
 - Change no code. If a split can't typecheck alone without a code change,
   restructure the split and say so in the report.
 ```

@@ -23,20 +23,25 @@ Each step works for both **subjects**: **code** (one or more branches) and a **d
   - Code: each branch, its worktree, its tip sha and its base. A stacked branch reviews against its parent: `git diff parent...child`.
   - Document: the file path and its current version (commit sha, or a saved copy).
 - **The spec.** What the work is meant to achieve: a plan, issue, PRD, ticket, or the document's own stated goal. Note any design docs it names.
-- **The standards.** The repo's guides (`AGENTS.md`, `CLAUDE.md`, `CONTRIBUTING`, style guides) and the operator's house rules from memory or notes.
+- **The house rules.** Gather them in this order, and read every hit in full:
+  1. Agent guides from the repo root down to every path under review: `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.cursor/rules/`, `.github/copilot-instructions.md`, plus `CONTRIBUTING.md` and any style or conventions doc they link.
+  2. Your memory: the index, then every entry marked as feedback, a rule or a convention, and any house-rules file an entry names.
+  3. Any `house-rules.md` file or `## House rules` section a guide or memory entry points to.
+
+  Where sources conflict, the more specific one wins: the operator's memory over the repo, and a package guide over the root. When nothing turns up, use the defaults in the review brief and say so in the report.
 
 For code, confirm each fixed point resolves and each diff is non-empty. Run the baseline build, typecheck and tests at every tip, in the background, and record the counts; reviewers' claims about tests get checked against them. Note the toolchain quirks the executor will need: environment setup, workspace libraries to build first, which gate's exit code counts.
 
-Done when every subject, spec source and standards source is named, and code has a baseline result.
+Done when every subject and spec source is named, every house-rules source is listed by path (or recorded as "none found, defaults apply"), and code has a baseline result.
 
 ## 2. Spawn the reviewers
 
-Write one shared brief from [review-brief.md](references/review-brief.md). It is a template: resolve every path, ref and rule for this task, and refresh the house rules each run. Then launch fresh-context subagents in one message. They never see each other's output. Pick the axes that fit the subject:
+Write one shared brief from [review-brief.md](references/review-brief.md). It is a template: resolve every path and ref for this task, and fill its house-rules slot from step 1. Then launch fresh-context subagents in one message. They never see each other's output. Pick the axes that fit the subject:
 
 - **Standards** (code, per branch): the repo's guides and house rules, API quality, over-engineering, and a comment sweep.
 - **Spec** (code, per branch): missing or partial items, scope creep, implemented-but-wrong (trace the code, don't trust names), contradicted decisions, test gaps. Each finding quotes the spec line.
 - **Soundness** (document): internal contradictions, stale references to code or other docs, claims that can't be verified, steps that can't be executed as written, speculative scope.
-- **Remaining work** (a plan with unbuilt phases): day-one blockers, design of what's proposed, unverifiable test items.
+- **Remaining work** (a plan with unbuilt phases): stale references, design of what's proposed, speculative scope, day-one blockers, unverifiable test items.
 - **Goal** (when asked whether the work reaches its goal): trace the end-to-end flow as it will be when finished, then list gaps, ordering hazards and risks on money or safety paths. End with a verdict and the minimum additions it needs.
 
 Keep the axes separate in the report: a change can pass one and fail another. While the reviewers run, read the key seams or sections yourself, so you can judge findings rather than relay them.
@@ -68,7 +73,12 @@ Done when the executor reports every instruction applied, or says which it could
 
 Read the executor's key changes yourself: correctness fixes, new seams, deleted branches, added comments (`git diff base...tip | grep '^+ *//'`). Then bring the paperwork in line:
 
-- **The spec:** update it to the shapes that shipped. Fix stale names and references, record the new tip and test counts, and list the open questions the operator must answer.
+- **The spec:** update it to the shapes that shipped.
+  - Add a dated "review revisions" list to its status block, with one line per decision, each one the operator can reject.
+  - Fix stale names and references, and record the new tip and test counts.
+  - Rewrite the unbuilt phases to match the remaining-work review.
+  - List the open questions the operator must answer.
+- **Any index of plans or specs:** update its row.
 - **Handover or status notes,** if the project keeps them: state, next steps in order, open decisions.
 - **Memory:** only what a future session can't derive from the repo.
 
