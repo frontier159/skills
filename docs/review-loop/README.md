@@ -37,12 +37,37 @@ The skill checks for these at the start of a run and asks before installing any 
 
 ## Usage
 
+A single branch, before you push:
+
 ```
-self-review this branch against plan.md before I push
-deep review of feature-a and feature-b, implement the feedback then stop
-adversarial review of docs/spec.md: does it achieve its goal?
-curate the branch for human review
+/review-loop self-review my branch feature-x against main before I push.
+Spec: docs/feature-x-plan.md. Loop until clean, then stop.
 ```
+
+A stack of branches:
+
+```
+/review-loop review my stacked branches feature-x-1 → feature-x-2 → feature-x-3
+(base: main) against the plan in docs/feature-x-plan.md.
+Fix what you find in the commit that owns it, loop until clean (max 3),
+then stop and report. Don't push.
+```
+
+A document:
+
+```
+/review-loop adversarial review of docs/spec.md: does it achieve its goal?
+```
+
+What makes a good prompt:
+- **Branches and base.** Name both so it diffs the right range. For a stack,
+  list the branches base first.
+- **A spec:** a plan, ticket or PR description. Without one it can only check
+  standards, not whether the work does what it should.
+- **How far to loop.** Without "loop until clean" it runs once and stops for
+  you; see [Driving the loop](#driving-the-loop).
+- **"Curate the branch for review"**, to re-carve the history into a readable
+  story before you open the PR.
 
 ## Driving the loop
 
