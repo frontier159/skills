@@ -8,12 +8,8 @@ process with a human gate, so the agent takes the same steps every run.
 | [github-pr-review](docs/github-pr-review) | Reviews GitHub PRs, including stacks, then posts findings you've approved as inline comments, with proven suggestions, code sketches and before/after screenshots. | `npx skills add frontier159/skills -s github-pr-review` |
 | [review-loop](docs/review-loop) | Runs a cold, adversarial review loop over code, plans, specs or docs: verify the findings, apply the fixes, update the spec, stop at your gate. | `npx skills add frontier159/skills -s review-loop` |
 
-Try it on your own branch before you push:
-
-```
-/review-loop self-review my branch feature-x against main before I push.
-Spec: docs/feature-x-plan.md. Loop until clean, then stop.
-```
+To try review-loop on your own branch before you push, see its
+[example prompts](docs/review-loop#usage).
 
 Install everything with `npx skills add frontier159/skills`, or ask your agent
 to "install the review-loop skill from https://github.com/frontier159/skills". The skills use

@@ -47,14 +47,14 @@ A single branch, before you push:
 
 ```
 /review-loop self-review my branch feature-x against main before I push.
-Spec: docs/feature-x-plan.md. Loop until clean, then stop.
+(optional) Goal: docs/feature-x-plan.md. Loop until clean, then stop.
 ```
 
 A stack of branches:
 
 ```
 /review-loop review my stacked branches feature-x-1 → feature-x-2 → feature-x-3
-(base: main) against the plan in docs/feature-x-plan.md.
+(base: main). (optional) Goal: docs/feature-x-plan.md.
 Fix what you find in the commit that owns it, loop until clean (max 3),
 then stop and report. Don't push.
 ```
@@ -68,8 +68,11 @@ A document:
 What makes a good prompt:
 - **Branches and base.** Name both so it diffs the right range. For a stack,
   list the branches base first.
-- **A spec:** a plan, ticket or PR description. Without one it can only check
-  standards, not whether the work does what it should.
+- **(optional) Goal:** what the work is meant to do. A plan or design doc, a
+  ticket or issue link, the PR description, or a sentence or two inline all
+  work. Without a goal the review still checks standards, but it can't tell
+  whether the work does what it should: missing pieces, half-built items,
+  scope creep.
 - **How far to loop.** Without "loop until clean" it runs once and stops for
   you; see [Driving the loop](#driving-the-loop).
 - **"Curate the branch for review"**, to re-carve the history into a readable
