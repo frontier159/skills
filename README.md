@@ -15,7 +15,8 @@ Try it on your own branch before you push:
 Spec: docs/feature-x-plan.md. Loop until clean, then stop.
 ```
 
-Install everything with `npx skills add frontier159/skills`. The skills use
+Install everything with `npx skills add frontier159/skills`, or ask your agent
+to "install the review-loop skill from https://github.com/frontier159/skills". The skills use
 the [Agent Skills](https://agentskills.io) format, so they work in Claude
 Code, Codex, Cursor and other agents. You can also copy a folder from
 [`skills/`](skills) into your agent's skills directory.

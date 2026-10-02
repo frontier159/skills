@@ -22,6 +22,12 @@ flowchart LR
 npx skills add frontier159/skills -s review-loop
 ```
 
+Or ask your agent:
+
+```
+install the review-loop skill from https://github.com/frontier159/skills
+```
+
 Or copy [`skills/review-loop/`](../../skills/review-loop) into your agent's
 skills directory by hand.
 

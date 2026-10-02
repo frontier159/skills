@@ -22,6 +22,12 @@ flowchart LR
 npx skills add frontier159/skills -s github-pr-review
 ```
 
+Or ask your agent:
+
+```
+install the github-pr-review skill from https://github.com/frontier159/skills
+```
+
 Works in any agent that supports the [Agent Skills](https://agentskills.io)
 format: Claude Code, Codex, Cursor, and others. Or copy
 [`skills/github-pr-review/`](../../skills/github-pr-review) into your agent's skills directory by hand.
