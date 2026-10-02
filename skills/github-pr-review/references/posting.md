@@ -3,11 +3,12 @@
 ## Comment shape
 
 Write for the PR author, who hasn't seen the review:
-1. The finding: what is wrong and why, in one to three sentences. Include concrete input → output where behaviour changes.
-2. The fix, in one of two forms:
+1. The severity, as the first line: `**Severity: 6/10 (should fix)**`, using the tier words from the scale (nit, minor, should fix, important, must fix). The tier word makes both ends of the scale unambiguous.
+2. The finding: what is wrong and why, in one to three sentences. Include concrete input → output where behaviour changes.
+3. The fix, in one of two forms:
    - A **suggestion** block when the replacement is self-contained: committing it alone keeps the build green.
    - Otherwise "Sketch of the fix:" and a fenced snippet copied from the proof branch, with `// …` for elided lines. A sketch still beats prose even when imports or callers also change.
-3. Optional: **Before/after** bullets and an image.
+4. Optional: **Before/after** bullets and an image.
 
 Run `stop-slop` over the comment text when it's installed.
 
@@ -27,7 +28,7 @@ Run `stop-slop` over the comment text when it's installed.
 ## Posting
 
 - Check each PR head sha against the one you reviewed. If a head moved, re-resolve the anchors.
-- Post one review per PR: `gh api repos/O/R/pulls/N/reviews -X POST --input payload.json`, with `{commit_id, event: "COMMENT", body?, comments: [{path, line, side, start_line?, start_side?, body}]}`. Put a consolidated top-level note in `body`.
+- Post one review per PR: `gh api repos/O/R/pulls/N/reviews -X POST --input payload.json`, with `{commit_id, event: "COMMENT", body?, comments: [{path, line, side, start_line?, start_side?, body}]}`. Put a consolidated top-level note in `body`, plus one line explaining the scale: "Each comment opens with a severity score: 1 is a nit, 10 is must-fix."
 - Edit: `PATCH repos/O/R/pulls/comments/<id>` with `-f body=…`. Find ids by body prefix and the operator's login.
 - After any post that printed nothing, list the comments before retrying. Silent failures happen, and so do duplicates.
 

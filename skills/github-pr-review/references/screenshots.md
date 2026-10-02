@@ -24,6 +24,8 @@ Ladle needs `mode=preview` so the page itself scrolls. Storybook uses `/iframe.h
 
 Install Pillow in a scratch venv (`python3 -m venv v && v/bin/pip install pillow`). Call a pair changed when its difference bounding box is non-empty after thresholding (> ~24 of 255) away antialiasing noise.
 
+When a fix changes behaviour but not the resting render (keyboard handling, focus, ARIA), identical captures prove nothing. Drive the interaction in a browser (Tab, arrow keys, open the popover), wait for transitions to settle, and screenshot both trees in the same state. Read a computed style only after the transition: a `transition-all` reading taken mid-animation looks like a missing ring.
+
 A changed pair whose "before" or "after" is blank, or lacks an overlay or dialog, is usually a **flake**: an animation or portal that hadn't rendered yet. Recapture it 3× from both servers before believing it. Check the proof diff too: if the branch never touches that component, the difference is a flake.
 
 ## Comparison page

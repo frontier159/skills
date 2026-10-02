@@ -16,7 +16,7 @@ The operator holds the **gate**. Nothing is posted until they give their verdict
 ## 1. Pin the PRs
 
 - Read each PR's head, base, body and size. Use REST (`gh api repos/O/R/pulls/N`): `gh pr view` goes through GraphQL, which rate-limits separately and often runs out first.
-- For a stack, order the PRs base-first. Each PR's diff is `git diff <base-branch>...<head>`.
+- For a stack, order the PRs base-first. Each PR's diff is `git diff <base-branch>...<head>`. Check that each head contains its parent's head (`git merge-base --is-ancestor`): a forked stack tests code without the parent's later fixes, and GitHub's diffs won't show it.
 - Work in a fresh worktree (`git worktree add ../<repo>-review origin/<head>`) whenever the operator's checkout has uncommitted changes. Say so in one line.
 - Run the repo's typecheck, lint, format and test gates at every PR tip, in the background, and record the results.
 - Gather the **house rules**, in this order, reading every hit in full:
@@ -54,7 +54,17 @@ Open the code for every finding you keep.
 - A claim about a dependency or registry gets checked at the source (registry tarball, lockfile re-resolution).
 - Reviewers exaggerate, and they sometimes contradict each other; the trace settles it.
 
-Write the **tracker**: a markdown file in the repo root (untracked), one table per PR plus one stack-wide table. Columns: ID · Where (`path:line`) · Sev (HARD / JUDGEMENT / Q) · Finding · Proposed fix · Status.
+Give every finding a **severity** from 1 to 10. It measures how much the finding matters to users and maintainers, not how sure you are:
+
+| Score | Tier | Typical finding |
+|---|---|---|
+| 9–10 | must fix | wrong money or time reaching users, data loss, a security hole |
+| 7–8 | important | a correctness bug users will hit |
+| 5–6 | should fix | a latent bug, a rejected request, a broken build or bisect |
+| 3–4 | minor | a narrow bug, a rule broken with real cost, a test that can't fail |
+| 1–2 | nit | style, naming, comments, duplication |
+
+Write the **tracker**: a markdown file in the repo root (untracked), one table per PR plus one stack-wide table. Columns: ID · Where (`path:line`) · Severity (1–10) · Finding · Proposed fix · Status. Sort each table by severity, highest first.
 
 Then STOP at the **gate**: summarise the tracker in chat and ask for verdicts. As verdicts arrive, the tracker shows **only the latest state**:
 - dropped rows are deleted;

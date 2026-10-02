@@ -36,7 +36,10 @@ Output, grouped by file:
 `path:line` (a line inside the PR diff, so it can take an inline comment;
 otherwise say "(outside diff)") — rule or axis — one or two sentences — the
 concrete fix, with a code sketch where it helps. Mark HARD (documented rule,
-house rule, correctness bug) or JUDGEMENT.
+house rule, correctness bug) or JUDGEMENT, and give a SEVERITY from 1 (nit:
+style, naming, comments) to 10 (must fix: wrong money or time reaching users,
+data loss, a security hole). For a correctness claim, give the concrete input
+→ output trace that earns the score.
 Then a "Comment sweep": each comment the diff adds that should change, as
 `path:line — DELETE` or `— REWRITE: <text>`.
 Under 900 words, excluding the sweep.
