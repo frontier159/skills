@@ -25,14 +25,37 @@ npx skills add frontier159/skills -s review-loop
 Or copy [`skills/review-loop/`](../../skills/review-loop) into your agent's
 skills directory by hand.
 
+### Recommended companion skills
+
+The skill checks for these at the start of a run and asks before installing any that are missing.
+
+| Skill | What it adds | Install |
+|---|---|---|
+| [`code-review`](https://github.com/mattpocock/skills) | standards + spec axes for the reviewers | `npx skills add mattpocock/skills -s code-review -g` |
+| [`test-audit`](https://github.com/openclaw/openclaw/tree/main/.agents/skills/test-audit) | an audit of tests the work adds | `npx skills add openclaw/openclaw -s test-audit -g` |
+| [`stop-slop`](https://github.com/hardikpandya/stop-slop) | cleaner comments and doc edits | `npx skills add hardikpandya/stop-slop -g` |
+
 ## Usage
 
 ```
-deep review of feature-a and feature-b against plan.md, implement the feedback then stop
+self-review this branch against plan.md before I push
+deep review of feature-a and feature-b, implement the feedback then stop
 adversarial review of docs/spec.md: does it achieve its goal?
-second review loop
 curate the branch for human review
 ```
+
+## Driving the loop
+
+Every finding gets a severity from 1 (nit) to 10 (must fix). A loop is **clean** when nothing at or above the bar survives verification; the bar defaults to 3. You choose how far it runs:
+
+| You say | It does |
+|---|---|
+| (nothing extra) | one loop, then stops at your gate |
+| "second review loop" | one more loop on the fixed work, then stops |
+| "loop until clean" | loops without stopping until clean, at most 3 loops |
+| "loop until clean, max 5, bar 5" | your cap and bar |
+
+After a loop it always reports the findings table by severity, what it declined and why, and why it stopped: clean, cap, or your gate. Later loops find less, and reviewers drift towards nits as the real issues run out, so a loop that finds only nits ends the run.
 
 ## How it works
 
@@ -65,8 +88,9 @@ questions.
 **Curate (optional).** Re-carves the history into a readable story. The final
 tree stays byte-identical, and every commit stays green. Then it loops again.
 
-**Stop.** Reports, per subject: what changed and why, what it declined to
-change, and the decisions left for you. Nothing is pushed until you say go.
+**Stop.** Reports, per subject: the findings by severity, what changed and
+why, what it declined to change, and the decisions left for you. Nothing is
+pushed until you say go.
 
 ## Hard rules
 

@@ -1,6 +1,6 @@
 ---
 name: review-loop
-description: A cold, adversarial review loop for anything with a spec or a standard to meet — code branches, PRs, plans, specs, design docs. Fresh-context reviewers in parallel, every finding verified, fixes applied by an executor (folded into the owning commits for code, edited in place for documents), the spec updated to match, optionally a second loop, then a STOP at the operator's gate. Use when the user asks for a "deep review", "adversarial review", "review and fix", "implement the feedback then stop", "second review loop", "curate the branch", or to check that a plan or spec achieves its goal.
+description: A cold, adversarial review loop for anything with a spec or a standard to meet — code branches, PRs, plans, specs, design docs. Fresh-context reviewers in parallel, every finding verified, fixes applied by an executor (folded into the owning commits for code, edited in place for documents), the spec updated to match, more loops until clean or a cap, then a STOP at the operator's gate. Use when the user asks for a "deep review", "adversarial review", "review and fix", a self-review "before I push", "implement the feedback then stop", "loop until clean", "second review loop", "curate the branch", or to check that a plan or spec achieves its goal.
 ---
 
 # Review loop
@@ -12,7 +12,7 @@ Someone, often a cheaper model, has produced work: code on a branch, a plan, a s
 3. Verify every finding yourself.
 4. Brief an executor to apply the fixes.
 5. Verify the executor's work and update the documents.
-6. Optionally curate the history and loop once more.
+6. Loop: optionally curate the history, then review again until clean or the cap.
 7. Report and STOP.
 
 Each step works for both **subjects**: **code** (one or more branches) and a **document** (a plan, spec or design doc). The difference shows up in what the reviewers read and how fixes land.
@@ -32,11 +32,13 @@ Each step works for both **subjects**: **code** (one or more branches) and a **d
 
 For code, confirm each fixed point resolves and each diff is non-empty. Run the baseline build, typecheck and tests at every tip, in the background, and record the counts; reviewers' claims about tests get checked against them. Note the toolchain quirks the executor will need: environment setup, workspace libraries to build first, which gate's exit code counts.
 
-Done when every subject and spec source is named, every house-rules source is listed by path (or recorded as "none found, defaults apply"), and code has a baseline result.
+Check which [recommended companion skills](#recommended-companion-skills) are installed. Ask the operator once about all the missing ones together, and install only what they approve.
+
+Done when every subject and spec source is named, every house-rules source is listed by path (or recorded as "none found, defaults apply"), code has a baseline result, and the operator has answered for every missing companion skill.
 
 ## 2. Spawn the reviewers
 
-Write one shared brief from [review-brief.md](references/review-brief.md). It is a template: resolve every path and ref for this task, and fill its house-rules slot from step 1. Then launch fresh-context subagents in one message. They never see each other's output. Pick the axes that fit the subject:
+Write one shared brief from [review-brief.md](references/review-brief.md). It is a template: resolve every path and ref for this task, and fill its house-rules slot from step 1. With `code-review` installed, borrow its standards and spec axes; with `test-audit` installed, hand it any tests the work adds or changes. Then launch fresh-context subagents in one message. They never see each other's output. Pick the axes that fit the subject:
 
 - **Standards** (code, per branch): the repo's guides and house rules, API quality, over-engineering, and a comment sweep.
 - **Spec** (code, per branch): missing or partial items, scope creep, implemented-but-wrong (trace the code, don't trust names), contradicted decisions, test gaps. Each finding quotes the spec line.
@@ -56,9 +58,21 @@ Open the subject for every finding you'd act on. A correctness claim gets a trac
 - **Judgement:** a smell or a design preference. Fix it when the change is small and clearly better; otherwise record it as a follow-up with the reason.
 - **Spec vs rules:** when the spec asks for something the rules forbid, the rules win. Say so prominently, so the operator can overrule.
 
+Give every survivor a **severity** from 1 to 10. It measures how much the finding matters to users and maintainers, not how sure you are:
+
+| Score | Tier | Typical finding |
+|---|---|---|
+| 9–10 | must fix | wrong money or time reaching users, data loss, a security hole |
+| 7–8 | important | a correctness bug users will hit |
+| 5–6 | should fix | a latent bug, a rejected request, a broken build or bisect |
+| 3–4 | minor | a narrow bug, a rule broken with real cost, a test that can't fail |
+| 1–2 | nit | style, naming, comments, duplication |
+
+Record the findings in one table, sorted by severity, highest first: ID · Where (`path:line` or section) · Severity · Finding · Fix · Status. It's the same shape `github-pr-review` uses, so an author's self-review can travel with the PR.
+
 Duplication or naming that predates the diff and that the diff only touched is a note, not a fix.
 
-Done when every finding is HARD, Judgement, or dropped with a reason.
+Done when every finding is HARD, Judgement, or dropped with a reason, and every survivor has a severity.
 
 ## 4. Brief the executor
 
@@ -84,11 +98,21 @@ Read the executor's key changes yourself: correctness fixes, new seams, deleted 
 
 When the code's name predates the doc's, rename in the doc rather than the code.
 
-Done when the spec describes what exists, and every open question is listed.
+When a fix changes rendered UI, capture the effect per [screenshots.md](references/screenshots.md): before (the tip you reviewed) and after (the executor's tip), each story pair captured back to back, with a bullet naming the fix behind every story that changed.
 
-## 6. Curate and loop (when asked)
+Done when the spec describes what exists, every open question is listed, and every visible change has its before/after.
 
-Human review wants a story, not a fixup trail. Brief a strong-model agent from [curation-brief.md](references/curation-brief.md): history only, with byte-identical final trees and every commit typechecking alone. Then run steps 2–5 again on the result. A second loop typically finds prose and placement issues, not correctness bugs.
+## 6. Loop
+
+**Curate (when asked).** Human review wants a story, not a fixup trail. Brief a strong-model agent from [curation-brief.md](references/curation-brief.md): history only, with byte-identical final trees and every commit typechecking alone.
+
+**Review again.** One loop is the default. Run another when the operator asks for it ("loop until clean", "max 3 loops"), or after curation. Each loop is steps 2–5 again, with fresh reviewers reading the whole subject, not only the fixes. Hand them the list of findings the operator declined, so decided points aren't raised again.
+
+A loop is **clean** when verification leaves no finding at or above the bar: severity 3 unless the operator sets another. Stop at clean or at the cap (3 loops unless the operator sets another), whichever comes first. Without an explicit "until clean", stop at the gate after every loop and ask before the next.
+
+Later loops find less, and reviewers drift towards nits as the real issues run out. A loop that finds only nits is the signal to stop, not to tighten the bar.
+
+Done when the last loop is clean, the cap is reached, or the operator has the gate.
 
 ## 7. Report and STOP
 
@@ -96,7 +120,9 @@ For each subject, report:
 - the tip or version, and the commit list;
 - what changed and why;
 - test counts before and after;
+- the findings table, by severity, with what's still open;
 - what you declined to change, and why;
+- the loops run, and why you stopped: clean, cap, or gate;
 - the decisions the operator must take.
 
 Then stop. Pushing, opening PRs and starting the next phase wait for the operator's explicit go-ahead.
@@ -108,3 +134,12 @@ Then stop. Pushing, opening PRs and starting the next phase wait for the operato
 - Fold into owning commits, because the branch is what a human reviews, not the fix trail.
 - Every commit typechecks alone, because bisect and review both walk the history.
 - STOP, because the operator wants a gate between phases.
+- A clean bar and a cap, because each loop costs more than the last and finds less.
+
+## Recommended companion skills
+
+| Skill | Used in | Install |
+|---|---|---|
+| [`code-review`](https://github.com/mattpocock/skills) | step 2: a two-axis (standards + spec) template for the reviewers | `npx skills add mattpocock/skills -s code-review -g` |
+| [`test-audit`](https://github.com/openclaw/openclaw/tree/main/.agents/skills/test-audit) | step 2: when the work adds or changes tests | `npx skills add openclaw/openclaw -s test-audit -g` |
+| [`stop-slop`](https://github.com/hardikpandya/stop-slop) | steps 4–5: comment rewrites and document edits | `npx skills add hardikpandya/stop-slop -g` |

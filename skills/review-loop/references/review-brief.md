@@ -58,7 +58,7 @@ Use these when the operator has none, or as a starting set to merge with theirs:
 
 ## Output format
 
-Group by file or section. For each finding: `location` — the rule or axis it fails — one or two sentences — the concrete fix. Mark it HARD (documented rule, house rule, correctness bug) or JUDGEMENT. Skip anything the linter or compiler already enforces.
+Group by file or section. For each finding: `location` — the rule or axis it fails — one or two sentences — the concrete fix. Mark it HARD (documented rule, house rule, correctness bug) or JUDGEMENT, and give a SEVERITY from 1 (nit: style, naming, comments) to 10 (must fix: wrong money or time reaching users, data loss, a security hole). For a correctness claim, give the input → output trace that earns the score. Skip anything the linter or compiler already enforces.
 
 Then a **Comment sweep** (code): every added comment that should change, as `path:line — DELETE` or `— REWRITE: <text>`.
 
