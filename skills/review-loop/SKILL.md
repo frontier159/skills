@@ -106,7 +106,7 @@ Done when the spec describes what exists, every open question is listed, and eve
 
 **Curate (when asked).** Human review wants a story, not a fixup trail. Brief a strong-model agent from [curation-brief.md](references/curation-brief.md): history only, with byte-identical final trees and every commit typechecking alone.
 
-**Review again.** One loop is the default. Run another when the operator asks for it ("loop until clean", "max 3 loops"), or after curation. Each loop is steps 2–5 again, with fresh reviewers reading the whole subject, not only the fixes. Hand them the list of findings the operator declined, so decided points aren't raised again.
+**Review again.** One loop is the default. Run another when the operator asks for it ("loop until clean", "max 3 loops"), or after curation. Each loop is steps 2–5 again, with fresh reviewers reading the whole subject, not only the fixes. Hand them the list of findings the operator declined, so decided points aren't raised again. When the last executor verified the work in a scratch tree, point the reviewers at a copy of it as their starting tree. Rebuilding it from scratch costs time and proves nothing new. They still draw their own conclusions.
 
 A loop is **clean** when verification leaves no finding at or above the bar: severity 3 unless the operator sets another. Stop at clean or at the cap (3 loops unless the operator sets another), whichever comes first. Without an explicit "until clean", stop at the gate after every loop and ask before the next.
 
