@@ -20,7 +20,7 @@ Each step works for both **subjects**: **code** (one or more branches) and a **d
 ## 1. Pin the inputs
 
 - **The subject.**
-  - Code: each branch, its worktree, its tip sha and its base. A stacked branch reviews against its parent: `git diff parent...child`.
+  - Code: each branch, its worktree, its tip sha and its base as a sha, never a moving ref like `origin/main`, so every later rebase lands on the same base. A stacked branch reviews against its parent: `git diff parent...child`.
   - Document: the file path and its current version (commit sha, or a saved copy).
 - **The spec.** What the work is meant to achieve: a plan, issue, PRD, ticket, or the document's own stated goal. Note any design docs it names.
 - **The house rules.** Gather them in this order, and read every hit in full:
@@ -30,7 +30,9 @@ Each step works for both **subjects**: **code** (one or more branches) and a **d
 
   Where sources conflict, the more specific one wins: the operator's memory over the repo, and a package guide over the root. When nothing turns up, use the defaults in the review brief and say so in the report.
 
-For code, confirm each fixed point resolves and each diff is non-empty. Run the baseline build, typecheck and tests at every tip, in the background, and record the counts; reviewers' claims about tests get checked against them. Note the toolchain quirks the executor will need: environment setup, workspace libraries to build first, which gate's exit code counts.
+For code, confirm each fixed point resolves and each diff is non-empty. Run the baseline build, typecheck and tests at every tip, in the background, and record the counts; reviewers' claims about tests get checked against them. Note the toolchain quirks the executor will need: environment setup, workspace libraries to build first, which gate's exit code counts. Name each suite that needs an external service (a database, a node, a fork) and who can start it. The executor's report marks each one run or not run, and you run any it skipped before the next loop.
+
+Ask the operator whether they want the **ruling gate**: after each loop's verification, they rule on every finding before any fix lands. With the gate, step 3 ends by presenting the findings table with a proposed fix for each, and step 4 waits for the ruling. Without it, step 4 follows straight on.
 
 Check which [recommended companion skills](#recommended-companion-skills) are installed. Ask the operator once about all the missing ones together, and install only what they approve.
 
@@ -44,6 +46,7 @@ Write one shared brief from [review-brief.md](references/review-brief.md). It is
 - **Spec** (code, per branch): missing or partial items, scope creep, implemented-but-wrong (trace the code, don't trust names), contradicted decisions, test gaps. Each finding quotes the spec line.
 - **Soundness** (document): internal contradictions, stale references to code or other docs, claims that can't be verified, steps that can't be executed as written, speculative scope.
 - **Remaining work** (a plan with unbuilt phases): stale references, design of what's proposed, speculative scope, day-one blockers, unverifiable test items.
+- **Naming** (code or document, once the logic has settled): every identifier and comment the work adds or changes, read cold against the brief's naming checklist. Run it as its own reviewer: folded into Standards, naming scores as a nit and drops out.
 - **Goal** (when asked whether the work reaches its goal): trace the end-to-end flow as it will be when finished, then list gaps, ordering hazards and risks on money or safety paths. End with a verdict and the minimum additions it needs.
 
 Keep the axes separate in the report: a change can pass one and fail another. While the reviewers run, read the key seams or sections yourself, so you can judge findings rather than relay them.
@@ -52,7 +55,7 @@ Done when every reviewer has reported.
 
 ## 3. Verify before acting
 
-Open the subject for every finding you'd act on. A correctness claim gets a trace, not a glance. Sort the survivors:
+Open the subject for every finding you'd act on. A correctness claim gets a trace, not a glance. A reviewer's proposed `REWRITE` text gets the same check as its finding: a rewritten comment can state a false fact. Sort the survivors:
 
 - **HARD:** a documented rule, a house rule, or a correctness bug. Fix it.
 - **Judgement:** a smell or a design preference. Fix it when the change is small and clearly better; otherwise record it as a follow-up with the reason.
@@ -65,8 +68,8 @@ Give every survivor a **severity** from 1 to 10. It measures how much the findin
 | 9–10 | must fix | wrong money or time reaching users, data loss, a security hole |
 | 7–8 | important | a correctness bug users will hit |
 | 5–6 | should fix | a latent bug, a rejected request, a broken build or bisect |
-| 3–4 | minor | a narrow bug, a rule broken with real cost, a test that can't fail |
-| 1–2 | nit | style, naming, comments, duplication |
+| 3–4 | minor | a narrow bug, a rule broken with real cost, a test that can't fail, a name or doc that states the wrong unit or meaning |
+| 1–2 | nit | style, naming taste, comments, duplication |
 
 Record the findings in one table, sorted by severity, highest first: ID · Where (`path:line` or section) · Severity · Finding · Fix · Status. It's the same shape `github-pr-review` uses, so an author's self-review can travel with the PR.
 
@@ -76,9 +79,11 @@ Done when every finding is HARD, Judgement, or dropped with a reason, and every 
 
 ## 4. Brief the executor
 
-Write a brief from [executor-brief.md](references/executor-brief.md). Give every change as an instruction: where it goes, the current shape, the target shape, and the test to add or delete. Give comment changes as exact `DELETE` / `REWRITE: <text>` lines. Spawn one strong-model agent per branch, one after another when branches stack. Always spawn a fresh agent; never resume a finished one for more file work.
+Write a brief from [executor-brief.md](references/executor-brief.md). Give every change as an instruction: where it goes, the current shape, the target shape, and the test to add or delete. Give comment changes as exact `DELETE` / `REWRITE: <text>` lines. Always spawn a fresh strong-model agent; never resume a finished one for more file work.
 
-- **Code:** each fix becomes `git commit --fixup=<owning sha>`, then `GIT_SEQUENCE_EDITOR=true git rebase -i --autosquash <base>`. Every commit passes the typecheck alone (`git rebase --exec '<typecheck>' <base>`), tests pass at the tip, and commit signing stays intact. No stash, no push.
+**Stacked branches live as one linear stack** in one worktree: the top branch is checked out, and a ref marks each lower PR's boundary. One executor folds every fix across the stack, then moves each lower ref to its rewritten commit with `git branch -f <ref> <new sha>`, matching by subject. Each PR is the diff between its ref and the one below, so reviewers see one PR at a time while the history stays one story.
+
+- **Code:** each fix becomes `git commit --fixup=<owning sha>`, then `GIT_SEQUENCE_EDITOR=true git rebase -i --autosquash <base sha>`. Every commit passes the typecheck alone (`git rebase --exec '<typecheck>' <base>`), tests pass at the tip, and commit signing stays intact. No stash, no push.
 - **Document:** the executor edits the document in place and keeps a dated "review revisions" list in it, one line per decision, each one the operator can reject.
 
 Done when the executor reports every instruction applied, or says which it couldn't apply and why.
@@ -106,7 +111,9 @@ Done when the spec describes what exists, every open question is listed, and eve
 
 **Curate (when asked).** Human review wants a story, not a fixup trail. Brief a strong-model agent from [curation-brief.md](references/curation-brief.md): history only, with byte-identical final trees and every commit typechecking alone.
 
-**Review again.** One loop is the default. Run another when the operator asks for it ("loop until clean", "max 3 loops"), or after curation. Each loop is steps 2–5 again, with fresh reviewers reading the whole subject, not only the fixes. Hand them the list of findings the operator declined, so decided points aren't raised again. When the last executor verified the work in a scratch tree, point the reviewers at a copy of it as their starting tree. Rebuilding it from scratch costs time and proves nothing new. They still draw their own conclusions.
+**Review again.** One loop is the default. Run another when the operator asks for it ("loop until clean", "max 3 loops"), or after curation. Each loop is steps 2–5 again, with fresh reviewers reading the whole subject, not only the fixes. Before each loop, append a dated **Decided** block to the shared brief: the new tips and baseline counts, the findings the operator declined, facts settled against the code (a rounding direction, a contract's behaviour), and accepted deviations. Reviewers read every block, so decided points aren't raised again.
+
+Size each loop by the last fold. A fold that changed behaviour or design gets every axis again; a fold of local fixes (comments, small corrections, tests) gets one combined Standards-and-Spec reviewer per branch plus Goal, reporting judgement calls only at severity 3 and up. When the last executor verified the work in a scratch tree, point the reviewers at a copy of it as their starting tree. Rebuilding it from scratch costs time and proves nothing new. They still draw their own conclusions.
 
 A loop is **clean** when verification leaves no finding at or above the bar: severity 3 unless the operator sets another. Stop at clean or at the cap (3 loops unless the operator sets another), whichever comes first. Without an explicit "until clean", stop at the gate after every loop and ask before the next.
 

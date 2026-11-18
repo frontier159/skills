@@ -24,6 +24,8 @@ For a stacked branch, add **Step 0: rebase**: `git rebase --onto <new parent> <o
 
 ## Changes
 
+Open with this line: "Where an instruction contradicts the code, a contract or a passing test, follow the code and report the conflict."
+
 Number them. Each change names the file or section, the current shape, the target shape, a one-sentence reason, and the test to add, change or delete. Mark judgement calls as such. Name the existing helper to reuse rather than describing one. Prefer deleting over adding.
 
 At this level of precision:
@@ -40,7 +42,8 @@ Code:
 ```
 Each fix goes into the commit that introduced the lines it changes (git blame):
 git commit --fixup=<sha> (plain git commit; keep the repo's signing), then
-GIT_SEQUENCE_EDITOR=true git rebase -i --autosquash <base>.
+GIT_SEQUENCE_EDITOR=true git rebase -i --autosquash <base sha>.
+For a stack, then move each lower ref: git branch -f <ref> <rewritten sha>.
 Afterwards: every commit is signed if the repo signs;
 git rebase --exec '<typecheck>' <base> passes at every commit;
 the full checks pass at the tip.
@@ -51,7 +54,7 @@ Document: edit in place, and add one line per decision to a dated "review revisi
 ## Boundaries and report
 
 ```
-Do NOT push. Do NOT open or edit a PR. Do NOT touch any other worktree. No stash.
+Do NOT push. Do NOT open or edit a PR. Do NOT touch any other worktree. No stash. No tags.
 Report: the new tip (or document version), files per commit, test counts
 before and after, and anything in this brief you couldn't do, with the reason.
 ```

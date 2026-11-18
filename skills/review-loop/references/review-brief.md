@@ -47,6 +47,13 @@ Use these when the operator has none, or as a starting set to merge with theirs:
 - Is it in the right module? A type used by two packages belongs in the lower one; a type used by one file shouldn't be exported.
 - Does it duplicate something that already exists? Name it.
 
+**Naming** (code or document). For every identifier (type, field, function, constant, config key, wire field, metric, log key, test name) and every comment the work adds or changes, a reader decodes it without opening the body:
+- The name carries its unit and scale: bps, a fraction or a ×multiplier; USD, cents or base units; seconds or ms. A value in bps that is applied as a multiplier (12_500 = 1.25×) is a wrong-unit name.
+- One concept has one name across every layer (service, engine, client, docs); list the variants. One name holds one meaning: a field whose value changed meaning gets a new name.
+- Referents are explicit: name the contract, service or record ("OrigamiOrderSettlement", not "the contract"); every "it", "this" and "its" has an antecedent.
+- A comment is true, parses as a sentence, and states what the code cannot show; a filler word (data, info, handle, check, value with no unit) gets a specific one.
+For each row give the proposed name or exact REWRITE text, and whether it is on the wire, stored or in config (costly) or internal.
+
 **Smell baseline** (judgement calls; label them as such): mysterious name, duplicated code, feature envy, data clumps, primitive obsession, repeated switches, shotgun surgery, divergent change, speculative generality, message chains, middle man, refused bequest.
 
 **Document soundness** (documents):
