@@ -45,6 +45,24 @@ Then a "Comment sweep": each comment the diff adds that should change, as
 Under 900 words, excluding the sweep.
 ```
 
+## Naming reviewer checklist
+
+For every identifier (type, field, function, constant, config key, wire field,
+metric, log key, test name) and every comment the PR adds or changes, a reader
+decodes it without opening the body:
+- The name carries its unit and scale: bps, a fraction or a ×multiplier; USD,
+  cents or base units; seconds or ms. A value in bps applied as a multiplier
+  (12_500 = 1.25×) is a wrong-unit name.
+- One concept has one name across every layer (service, engine, client, docs);
+  list the variants. A field whose value changed meaning gets a new name.
+- Referents are explicit: name the contract, service or record, not "the
+  contract"; every "it", "this" and "its" has an antecedent.
+- A comment is true, parses as a sentence, and states what the code cannot
+  show; a filler word (data, info, handle, check, value with no unit) gets a
+  specific one.
+Output one table: `path:line` | current | problem | proposed name or exact
+REWRITE text | wire, stored or config (costly) vs internal. At most 25 rows.
+
 ## Whole-stack reviewer additions
 
 - The PR bodies are the spec. Flag missing items, scope creep, and code that lands in one PR but is first used in a later one.
